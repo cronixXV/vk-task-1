@@ -12,6 +12,11 @@ import {
   Button,
   TextField,
   Stack,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  SelectChangeEvent,
 } from '@mui/material';
 
 const MovieList: React.FC = observer(() => {
@@ -23,6 +28,10 @@ const MovieList: React.FC = observer(() => {
   useEffect(() => {
     MovieStore.loadPopularMovies(page);
   }, [page]);
+
+  useEffect(() => {
+    MovieStore.sortMovies();
+  }, []);
 
   const handleScroll = () => {
     if (
@@ -51,6 +60,12 @@ const MovieList: React.FC = observer(() => {
 
   const handleDeleteClick = (id: number) => {
     MovieStore.deleteMovie(id);
+  };
+
+  const handleSortChange = (
+    event: SelectChangeEvent<'popularity' | 'release_date'>
+  ) => {
+    MovieStore.setSortBy(event.target.value as 'popularity' | 'release_date');
   };
 
   useEffect(() => {
@@ -89,11 +104,30 @@ const MovieList: React.FC = observer(() => {
       <Typography variant="h4" align="center">
         Популярные фильмы
       </Typography>
+      <Stack alignItems={'flex-end'}>
+        <FormControl
+          size="small"
+          variant="outlined"
+          sx={{ mb: 1, width: '200px' }}
+        >
+          <InputLabel id="sort-label">Сортировать по</InputLabel>
+          <Select
+            labelId="sort-label"
+            value={MovieStore.sortBy}
+            onChange={handleSortChange}
+            label="Сортировать по"
+          >
+            <MenuItem value="popularity">Популярность</MenuItem>
+            <MenuItem value="release_date">Дата выхода</MenuItem>
+          </Select>
+        </FormControl>
+      </Stack>
+
       <List>
         {MovieStore.movies.map((movie) => (
           <ListItem key={movie.id} divider>
             {editingMovieId === movie.id ? (
-              <Box display="flex" flexDirection="column" gap={2} width="100%">
+              <Box display="flex" flexDirection="column" gap={1} width="100%">
                 <TextField
                   label="Название"
                   value={editedTitle}
@@ -107,12 +141,17 @@ const MovieList: React.FC = observer(() => {
                   fullWidth
                   multiline
                 />
-                <Box display="flex" gap={1} justifyContent="flex-end">
-                  <Button variant="contained" onClick={handleSaveClick}>
+                <Box display="flex" gap={2} justifyContent="flex-end">
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={handleSaveClick}
+                  >
                     Сохранить
                   </Button>
                   <Button
                     variant="outlined"
+                    size="small"
                     onClick={() => setEditingMovieId(null)}
                   >
                     Отмена
@@ -122,18 +161,23 @@ const MovieList: React.FC = observer(() => {
             ) : (
               <>
                 <ListItemText
+                  sx={{
+                    padding: '5px',
+                  }}
                   primary={movie.title}
                   secondary={movie.overview}
                 />
                 <Box display="flex" gap={1}>
                   <Button
                     variant="outlined"
+                    size="small"
                     onClick={() => handleEditClick(movie)}
                   >
                     Редактировать
                   </Button>
                   <Button
                     variant="outlined"
+                    size="small"
                     color="error"
                     onClick={() => handleDeleteClick(movie.id)}
                   >
@@ -145,7 +189,9 @@ const MovieList: React.FC = observer(() => {
           </ListItem>
         ))}
       </List>
-      {MovieStore.loading && <CircularProgress />}
+      <Box display={'flex'} justifyContent={'center'} pt={2}>
+        {MovieStore.loading && <CircularProgress />}
+      </Box>
     </Stack>
   );
 });

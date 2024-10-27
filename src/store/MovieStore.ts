@@ -6,6 +6,8 @@ export interface Movie {
   title: string;
   overview: string;
   poster_path: string;
+  popularity: number;
+  release_date: string;
 }
 
 class MovieStore {
@@ -14,6 +16,7 @@ class MovieStore {
   error: string | null = null;
   page = 1;
   query = '';
+  sortBy: 'popularity' | 'release_date' = 'popularity';
 
   constructor() {
     makeAutoObservable(this);
@@ -29,7 +32,7 @@ class MovieStore {
     this.movies = this.movies.filter((movie) => movie.id !== id);
   };
 
-  loadPopularMovies = async (page = 1) => {
+  loadPopularMovies = async (page: number) => {
     runInAction(() => {
       this.loading = true;
       this.error = null;
@@ -42,6 +45,7 @@ class MovieStore {
       runInAction(() => {
         this.movies =
           page === 1 ? data.results : [...this.movies, ...data.results];
+        this.sortMovies();
       });
     } catch (error) {
       runInAction(() => {
@@ -68,6 +72,7 @@ class MovieStore {
       const data = await searchMovies(query, this.page);
       runInAction(() => {
         this.movies = data;
+        this.sortMovies();
       });
     } catch {
       runInAction(() => {
@@ -79,6 +84,25 @@ class MovieStore {
       });
     }
   }
+
+  setSortBy = (sortBy: 'popularity' | 'release_date') => {
+    this.sortBy = sortBy;
+    this.sortMovies();
+  };
+
+  sortMovies = () => {
+    this.movies.sort((a, b) => {
+      if (this.sortBy === 'popularity') {
+        return b.popularity - a.popularity;
+      } else if (this.sortBy === 'release_date') {
+        return (
+          new Date(b.release_date).getTime() -
+          new Date(a.release_date).getTime()
+        );
+      }
+      return 0;
+    });
+  };
 }
 
 export default new MovieStore();
