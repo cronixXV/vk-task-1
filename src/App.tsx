@@ -1,9 +1,12 @@
-function App() {
+import React from 'react';
+import MovieList from './components/MovieList';
+
+const App: React.FC = () => {
   return (
     <div>
-      <h1>Hello, Vite + React + TypeScript + MobX + MUI!</h1>
+      <MovieList />
     </div>
   );
-}
+};
 
 export default App;
