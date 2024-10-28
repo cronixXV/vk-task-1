@@ -24,9 +24,11 @@ Jest и React Testing Library: Покрытие unit-тестами всех к�
 
 git clone https://github.com/cronixXV/vk-task-1
 cd vk-task-1
+
 Установка зависимостей:
 
 npm install
+
 Запуск приложения:
 
 npm start
