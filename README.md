@@ -1,50 +1,56 @@
-# React + TypeScript + Vite
+# Infinite Movie List
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Описание
 
-Currently, two official plugins are available:
+Проект представляет собой бесконечный список популярных фильмов, загружаемых с публичного API. Реализована плавная подгрузка данных при скролле, а также возможность локального редактирования и удаления элементов. Этот проект разработан с использованием TypeScript, React, MobX, CSS-модулей и библиотеки компонентов Material UI.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Функциональные возможности
 
-## Expanding the ESLint configuration
+Получение данных с сервера: Загружаются популярные фильмы с публичного API (например, TMDB API).
+Бесконечный скролл: Элементы подгружаются постепенно при прокрутке страницы.
+Локальное редактирование и удаление: Возможность локально редактировать и удалять элементы из списка с использованием MobX для управления состоянием.
+Покрытие тестами: Компоненты и функциональность покрыты unit-тестами с использованием Jest и React Testing Library.
+Технологии
+React + TypeScript: Библиотека для построения пользовательских интерфейсов, используя строгую типизацию TypeScript для надежности кода.
+MobX: Библиотека для управления состоянием, обеспечивающая наблюдаемость состояния и реактивные обновления.
+CSS-модули: Стилизация с помощью CSS-модулей для изоляции стилей.
+Material UI (MUI): UI-библиотека, обеспечивающая готовые компоненты и гибкость кастомизации. Выбрана для ускорения разработки и минималистичного дизайна.
+Jest и React Testing Library: Покрытие unit-тестами всех компонентов и ключевой логики приложения.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Стек
 
-- Configure the top-level `parserOptions` property like this:
+Языки и библиотеки: TypeScript, React, MobX, CSS-модули.
+Сборщик: Vite.
+Тестирование: Покрытие unit-тестами с использованием Jest и React Testing Library.
+API: Использование публичного API с большим количеством данных (TMDB API) и поддержкой пагинации.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Установка и запуск
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Клонирование репозитория:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+git clone https://github.com/cronixXV/vk-task-1
+cd infinite-movie-list
+Установка зависимостей:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+npm install
+Запуск приложения:
+
+npm start
+
+Запуск тестов:
+
+npm run test
+
+API и аутентификация
+Проект использует публичное API для получения списка популярных фильмов. Если API требует аутентификации, необходимо создать файл .env и добавить переменные окружения VITE_API_KEY и VITE_BASE_URL.
+
+Пример .env:
+
+VITE_API_KEY=your_api_key_here
+VITE_BASE_URL=https://api.example.com
+
+Тестирование
+Каждый компонент приложения покрыт unit-тестами, которые проверяют отображение, редактирование и удаление элементов. Тесты написаны с использованием Jest и React Testing Library.
+
+Примечание
+Список фильмов поддерживает локальное редактирование и удаление элементов, но изменения не отправляются на сервер. Это обеспечивает быстрое взаимодействие с данными и удобство редактирования без необходимости работы с серверными запросами.
