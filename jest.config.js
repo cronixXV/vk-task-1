@@ -1,21 +1,18 @@
-import dotenv from 'dotenv';
-
-dotenv.config({ path: '.env.test' });
-
-export default {
-  preset: 'ts-jest',
-  testEnvironment: 'jest-environment-jsdom',
-  transform: {
-    '^.+\\.(ts|tsx)$': 'babel-jest',
-  },
-  moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-  },
+/** @type {import('jest').Config} */
+const config = {
+  collectCoverageFrom: ['src/**/*.{ts,tsx}'],
+  coverageDirectory: 'coverage',
+  coveragePathIgnorePatterns: ['node_modules', 'src/main.tsx'],
+  testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
-  transformIgnorePatterns: ['/node_modules/'],
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.json',
-    },
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+  },
+  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
+  moduleNameMapper: {
+    '^.+\\.svg$': 'jest-svg-transformer',
+    '^.+\\.css$': 'identity-obj-proxy',
   },
 };
+
+export default config;
