@@ -1,5 +1,4 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { searchMovies } from '../services/tmdbService';
 
 export interface Movie {
   id: number;
@@ -60,30 +59,6 @@ class MovieStore {
       });
     }
   };
-
-  async searchMovies(query: string) {
-    runInAction(() => {
-      this.loading = true;
-      this.error = null;
-      this.query = query;
-      this.page = 1;
-    });
-    try {
-      const data = await searchMovies(query, this.page);
-      runInAction(() => {
-        this.movies = data;
-        this.sortMovies();
-      });
-    } catch {
-      runInAction(() => {
-        this.error = 'Ошибка при загрузке фильмов по запросу';
-      });
-    } finally {
-      runInAction(() => {
-        this.loading = false;
-      });
-    }
-  }
 
   setSortBy = (sortBy: 'popularity' | 'release_date') => {
     this.sortBy = sortBy;
