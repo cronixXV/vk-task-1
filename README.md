@@ -23,7 +23,7 @@ Jest и React Testing Library: Покрытие unit-тестами всех к�
 Клонирование репозитория:
 
 git clone https://github.com/cronixXV/vk-task-1
-cd infinite-movie-list
+cd vk-task-1
 Установка зависимостей:
 
 npm install
