@@ -1,11 +1,18 @@
-module.exports = {
-  preset: "ts-jest",
-  testEnvironment: "jsdom",
+/** @type {import('jest').Config} */
+const config = {
+  collectCoverageFrom: ['src/**/*.{ts,tsx}'],
+  coverageDirectory: 'coverage',
+  coveragePathIgnorePatterns: ['node_modules', 'src/main.tsx'],
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
   transform: {
-    "^.+\\.(ts|tsx)$": "babel-jest",
+    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
   },
+  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
   moduleNameMapper: {
-    "\\.(css|less|scss|sass)$": "identity-obj-proxy",
+    '^.+\\.svg$': 'jest-svg-transformer',
+    '^.+\\.css$': 'identity-obj-proxy',
   },
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
 };
+
+export default config;

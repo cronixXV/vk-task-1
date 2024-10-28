@@ -1,36 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import MovieStore from '../store/MovieStore';
-import type { Movie } from '../store/MovieStore';
-import {
-  Box,
-  CircularProgress,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Button,
-  TextField,
-  Stack,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  SelectChangeEvent,
-} from '@mui/material';
+import MovieStore, { Movie } from '../store/MovieStore';
+import { Box, CircularProgress, Typography, List, Stack } from '@mui/material';
+import SortSelector from './sortSelector/SortSelector';
+import MovieItem from './movieItem/MovieItem';
+import MovieEditor from './movieEditor/MovieEditor';
 
 const MovieList: React.FC = observer(() => {
   const [page, setPage] = useState(1);
   const [editingMovieId, setEditingMovieId] = useState<number | null>(null);
-  const [editedTitle, setEditedTitle] = useState<string>('');
-  const [editedOverview, setEditedOverview] = useState<string>('');
 
   useEffect(() => {
     MovieStore.loadPopularMovies(page);
   }, [page]);
 
   useEffect(() => {
-    MovieStore.sortMovies();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleScroll = () => {
@@ -42,36 +28,17 @@ const MovieList: React.FC = observer(() => {
     }
   };
 
-  const handleEditClick = (movie: Movie) => {
-    setEditingMovieId(movie.id);
-    setEditedTitle(movie.title);
-    setEditedOverview(movie.overview);
-  };
+  const handleEditClick = (movieId: number) => setEditingMovieId(movieId);
 
-  const handleSaveClick = () => {
+  const handleSaveClick = (updatedMovie: Partial<Movie>) => {
     if (editingMovieId !== null) {
-      MovieStore.editMovie(editingMovieId, {
-        title: editedTitle,
-        overview: editedOverview,
-      });
+      MovieStore.editMovie(editingMovieId, updatedMovie);
       setEditingMovieId(null);
     }
   };
 
-  const handleDeleteClick = (id: number) => {
-    MovieStore.deleteMovie(id);
-  };
-
-  const handleSortChange = (
-    event: SelectChangeEvent<'popularity' | 'release_date'>
-  ) => {
-    MovieStore.setSortBy(event.target.value as 'popularity' | 'release_date');
-  };
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const handleDeleteClick = (movieId: number) =>
+    MovieStore.deleteMovie(movieId);
 
   if (MovieStore.loading && page === 1) {
     return (
@@ -104,92 +71,36 @@ const MovieList: React.FC = observer(() => {
       <Typography variant="h4" align="center">
         Популярные фильмы
       </Typography>
-      <Stack alignItems={'flex-end'}>
-        <FormControl
-          size="small"
-          variant="outlined"
-          sx={{ mb: 1, width: '200px' }}
-        >
-          <InputLabel id="sort-label">Сортировать по</InputLabel>
-          <Select
-            labelId="sort-label"
-            value={MovieStore.sortBy}
-            onChange={handleSortChange}
-            label="Сортировать по"
-          >
-            <MenuItem value="popularity">Популярность</MenuItem>
-            <MenuItem value="release_date">Дата выхода</MenuItem>
-          </Select>
-        </FormControl>
+      <Stack alignItems="flex-end">
+        <SortSelector
+          sortBy={'popularity'}
+          onSortChange={function (): void {
+            throw new Error('Function not implemented.');
+          }}
+        />
       </Stack>
 
       <List>
-        {MovieStore.movies.map((movie) => (
-          <ListItem key={movie.id} divider>
-            {editingMovieId === movie.id ? (
-              <Box display="flex" flexDirection="column" gap={1} width="100%">
-                <TextField
-                  label="Название"
-                  value={editedTitle}
-                  onChange={(e) => setEditedTitle(e.target.value)}
-                  fullWidth
-                />
-                <TextField
-                  label="Описание"
-                  value={editedOverview}
-                  onChange={(e) => setEditedOverview(e.target.value)}
-                  fullWidth
-                  multiline
-                />
-                <Box display="flex" gap={2} justifyContent="flex-end">
-                  <Button
-                    variant="contained"
-                    size="small"
-                    onClick={handleSaveClick}
-                  >
-                    Сохранить
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => setEditingMovieId(null)}
-                  >
-                    Отмена
-                  </Button>
-                </Box>
-              </Box>
-            ) : (
-              <>
-                <ListItemText
-                  sx={{
-                    padding: '5px',
-                  }}
-                  primary={movie.title}
-                  secondary={movie.overview}
-                />
-                <Box display="flex" gap={1}>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => handleEditClick(movie)}
-                  >
-                    Редактировать
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    color="error"
-                    onClick={() => handleDeleteClick(movie.id)}
-                  >
-                    Удалить
-                  </Button>
-                </Box>
-              </>
-            )}
-          </ListItem>
-        ))}
+        {MovieStore.movies.map((movie) =>
+          editingMovieId === movie.id ? (
+            <MovieEditor
+              key={movie.id}
+              movie={movie}
+              onSave={handleSaveClick}
+              onCancel={() => setEditingMovieId(null)}
+            />
+          ) : (
+            <MovieItem
+              key={movie.id}
+              movie={movie}
+              onEditClick={() => handleEditClick(movie.id)}
+              onDeleteClick={() => handleDeleteClick(movie.id)}
+            />
+          )
+        )}
       </List>
-      <Box display={'flex'} justifyContent={'center'} pt={2}>
+
+      <Box display="flex" justifyContent="center" pt={2}>
         {MovieStore.loading && <CircularProgress />}
       </Box>
     </Stack>
