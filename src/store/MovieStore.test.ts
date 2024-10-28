@@ -114,12 +114,3 @@ jest.mock('../services/tmdbService', () => ({
     ])
   ),
 }));
-
-test('searchMovies updates movies and handles loading state', async () => {
-  await movieStore.searchMovies('test query');
-
-  // Проверяем, что загрузка завершена и фильмы обновлены
-  expect(movieStore.loading).toBe(false);
-  expect(movieStore.movies).toHaveLength(1);
-  expect(movieStore.movies[0].title).toBe('Mocked Movie');
-});

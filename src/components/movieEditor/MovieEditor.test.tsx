@@ -48,8 +48,8 @@ describe('MovieEditor', () => {
     const saveButton = screen.getByRole('button', { name: /сохранить/i });
     fireEvent.click(saveButton);
     expect(mockOnSave).toHaveBeenCalledWith({
-      title: 'Тестовый фильм', // исходное значение
-      overview: 'Это тестовое описание фильма.', // исходное значение
+      title: 'Тестовый фильм',
+      overview: 'Это тестовое описание фильма.',
     });
   });
 
