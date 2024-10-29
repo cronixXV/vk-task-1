@@ -1,59 +1,66 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import MovieStore, { Movie } from '../store/MovieStore';
+import movieStore, { type Movie } from '../store/MovieStore';
 import { Box, CircularProgress, Typography, List, Stack } from '@mui/material';
-import SortSelector from './sortSelector/SortSelector';
-import MovieItem from './movieItem/MovieItem';
-import MovieEditor from './movieEditor/MovieEditor';
+import SortSelector from './sort-selector/SortSelector';
+import MovieItem from './movie-item/MovieItem';
+import MovieEditor from './movie-editor/MovieEditor';
+import { throttle } from '../libs/throttle';
 
 const MovieList: React.FC = observer(() => {
   const [page, setPage] = useState(1);
   const [editingMovieId, setEditingMovieId] = useState<number | null>(null);
+  const [scroll, setScroll] = useState(window.scrollY); // Иначе будет перескок с нуля на актуальное значение
 
   useEffect(() => {
-    MovieStore.loadPopularMovies(page);
+    movieStore.loadPopularMovies(page);
   }, [page]);
 
   useEffect(() => {
+    const handleScroll = throttle(() => {
+      setScroll(window.scrollY);
+    }, 30); // Задержка между срабатыванием события Scroll
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleScroll = () => {
+  useEffect(() => {
     if (
       window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 200
+        document.documentElement.offsetHeight - 200 &&
+      !movieStore.loading // Проверяем, что загрузка не идет
     ) {
       setPage((prevPage) => prevPage + 1);
     }
-  };
+  }, [scroll]);
 
   const handleEditClick = (movieId: number) => setEditingMovieId(movieId);
 
   const handleSaveClick = (updatedMovie: Partial<Movie>) => {
     if (editingMovieId !== null) {
-      MovieStore.editMovie(editingMovieId, updatedMovie);
+      movieStore.editMovie(editingMovieId, updatedMovie);
       setEditingMovieId(null);
     }
   };
 
   const handleDeleteClick = (movieId: number) =>
-    MovieStore.deleteMovie(movieId);
+    movieStore.deleteMovie(movieId);
 
-  if (MovieStore.loading && page === 1) {
+  if (movieStore.loading && page === 1) {
     return (
       <Box
         display="flex"
         justifyContent="center"
         alignItems="center"
-        minHeight="50vh"
+        minHeight="100vh"
       >
         <CircularProgress />
       </Box>
     );
   }
 
-  if (MovieStore.error) {
+  if (movieStore.error) {
     return (
       <Box
         display="flex"
@@ -61,7 +68,7 @@ const MovieList: React.FC = observer(() => {
         alignItems="center"
         minHeight="50vh"
       >
-        <Typography color="error">{MovieStore.error}</Typography>
+        <Typography color="error">{movieStore.error}</Typography>
       </Box>
     );
   }
@@ -72,16 +79,11 @@ const MovieList: React.FC = observer(() => {
         Популярные фильмы
       </Typography>
       <Stack alignItems="flex-end">
-        <SortSelector
-          sortBy={'popularity'}
-          onSortChange={function (): void {
-            throw new Error('Function not implemented.');
-          }}
-        />
+        <SortSelector />
       </Stack>
 
       <List>
-        {MovieStore.movies.map((movie) =>
+        {movieStore.movies.map((movie) =>
           editingMovieId === movie.id ? (
             <MovieEditor
               key={movie.id}
@@ -101,7 +103,7 @@ const MovieList: React.FC = observer(() => {
       </List>
 
       <Box display="flex" justifyContent="center" pt={2}>
-        {MovieStore.loading && <CircularProgress />}
+        {movieStore.loading && <CircularProgress />}
       </Box>
     </Stack>
   );

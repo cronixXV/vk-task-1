@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import { fetchPopularMovies } from '../libs/fetchPopularMovies';
 
 export interface Movie {
   id: number;
@@ -37,13 +38,9 @@ class MovieStore {
       this.error = null;
     });
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/movie/popular?api_key=${import.meta.env.VITE_API_KEY}&page=${page}&language=ru-RU`
-      );
-      const data = await response.json();
+      const data = await fetchPopularMovies(page);
       runInAction(() => {
-        this.movies =
-          page === 1 ? data.results : [...this.movies, ...data.results];
+        this.movies = page === 1 ? data : [...this.movies, ...data];
         this.sortMovies();
       });
     } catch (error) {

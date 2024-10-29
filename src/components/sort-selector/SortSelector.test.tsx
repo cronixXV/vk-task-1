@@ -1,17 +1,21 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import SortSelector from './SortSelector';
+import movieStore from '../../store/MovieStore';
+
+jest.mock('../../store/MovieStore', () => ({
+  sortBy: 'popularity',
+  setSortBy: jest.fn(),
+}));
 
 describe('SortSelector', () => {
-  const mockHandleSortChange = jest.fn();
+  const mockSetSortBy = movieStore.setSortBy as jest.Mock;
 
-  const renderComponent = (sortBy: 'popularity' | 'release_date') => {
-    render(
-      <SortSelector sortBy={sortBy} onSortChange={mockHandleSortChange} />
-    );
-  };
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   it('отображает выбранный вариант сортировки корректно', () => {
-    renderComponent('release_date');
+    render(<SortSelector />);
     const selectElement = screen.getByLabelText('Сортировать по');
 
     // Открываем Select, чтобы сделать опции видимыми
@@ -24,8 +28,8 @@ describe('SortSelector', () => {
     expect(releaseDateOption).toBeInTheDocument();
   });
 
-  it('вызывает обработчик onSortChange при выборе нового варианта', () => {
-    renderComponent('popularity');
+  it('вызывает setSortBy при выборе нового варианта', () => {
+    render(<SortSelector />);
     const selectElement = screen.getByLabelText('Сортировать по');
 
     // Открываем Select
@@ -36,8 +40,8 @@ describe('SortSelector', () => {
     });
     fireEvent.click(releaseDateOption);
 
-    // Проверка вызова обработчика с конкретным значением
-    expect(mockHandleSortChange).toHaveBeenCalledWith('release_date');
-    expect(mockHandleSortChange).toHaveBeenCalledTimes(1);
+    // Проверка вызова setSortBy с конкретным значением
+    expect(mockSetSortBy).toHaveBeenCalledWith('release_date');
+    expect(mockSetSortBy).toHaveBeenCalledTimes(1);
   });
 });

@@ -85,3 +85,23 @@ describe('MovieList', () => {
     expect(MovieStore.loadPopularMovies).toHaveBeenCalledWith(2);
   });
 });
+
+describe('MovieList', () => {
+  it('сбрасывает editingMovieId при нажатии на "Отмена" в MovieEditor', () => {
+    render(<MovieList />);
+
+    // Находим кнопку редактирования и кликаем по ней для открытия редактора
+    const editButton = screen.getAllByText('Редактировать')[0];
+    fireEvent.click(editButton);
+
+    // Проверяем, что MovieEditor открыт
+    expect(screen.getByText('Сохранить')).toBeInTheDocument();
+
+    // Находим кнопку отмены и кликаем по ней
+    const cancelButton = screen.getByText('Отмена');
+    fireEvent.click(cancelButton);
+
+    // Проверяем, что MovieEditor больше не отображается
+    expect(screen.queryByText('Сохранить')).not.toBeInTheDocument();
+  });
+});
