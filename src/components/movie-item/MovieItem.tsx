@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, ListItem, ListItemText } from '@mui/material';
+import { Button, ListItem, ListItemText, Stack } from '@mui/material';
 import type { Movie } from '../../store/MovieStore';
 
 interface MovieItemProps {
@@ -20,19 +20,19 @@ const MovieItem: React.FC<MovieItemProps> = ({
         secondary={movie.overview}
         sx={{ padding: '5px' }}
       />
-      <Box display="flex" gap={1}>
+      <Stack flexDirection={'row'} gap={1}>
         <Button variant="outlined" size="small" onClick={onEditClick}>
           Редактировать
         </Button>
         <Button
           variant="outlined"
           size="small"
-          color="error"
+          color="secondary"
           onClick={onDeleteClick}
         >
           Удалить
         </Button>
-      </Box>
+      </Stack>
     </ListItem>
   );
 };

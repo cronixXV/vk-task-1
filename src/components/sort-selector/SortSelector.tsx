@@ -5,21 +5,14 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  Divider,
 } from '@mui/material';
+import { observer } from 'mobx-react-lite';
+import movieStore from '../../store/MovieStore';
 
-interface SortSelectorProps {
-  sortBy: 'popularity' | 'release_date';
-  onSortChange: (sortBy: 'popularity' | 'release_date') => void;
-}
-
-const SortSelector: React.FC<SortSelectorProps> = ({
-  sortBy,
-  onSortChange,
-}) => {
-  const handleChange = (
-    event: SelectChangeEvent<'popularity' | 'release_date'>
-  ) => {
-    onSortChange(event.target.value as 'popularity' | 'release_date');
+const SortSelector: React.FC = observer(() => {
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    movieStore.setSortBy(event.target.value as 'popularity' | 'release_date');
   };
 
   return (
@@ -27,15 +20,16 @@ const SortSelector: React.FC<SortSelectorProps> = ({
       <InputLabel id="sort-label">Сортировать по</InputLabel>
       <Select
         labelId="sort-label"
-        value={sortBy}
+        value={movieStore.sortBy ?? 'popularity'}
         onChange={handleChange}
         label="Сортировать по"
       >
         <MenuItem value="popularity">Популярность</MenuItem>
+        <Divider />
         <MenuItem value="release_date">Дата выхода</MenuItem>
       </Select>
     </FormControl>
   );
-};
+});
 
 export default SortSelector;

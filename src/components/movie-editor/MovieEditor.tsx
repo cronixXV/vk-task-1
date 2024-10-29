@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField } from '@mui/material';
+import { Stack, Box, Button, TextField } from '@mui/material';
 import type { Movie } from '../../store/MovieStore';
 
 interface MovieEditorProps {
@@ -21,7 +21,7 @@ const MovieEditor: React.FC<MovieEditorProps> = ({
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap={1} width="100%">
+    <Stack flexDirection="column" gap={1} width="100%">
       <TextField
         label="Название"
         value={title}
@@ -43,7 +43,7 @@ const MovieEditor: React.FC<MovieEditorProps> = ({
           Отмена
         </Button>
       </Box>
-    </Box>
+    </Stack>
   );
 };
 
